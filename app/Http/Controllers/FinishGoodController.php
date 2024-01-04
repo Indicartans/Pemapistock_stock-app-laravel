@@ -21,9 +21,9 @@ class FinishGoodController extends Controller
      */
     public function index()
     {
-        $category = Category::all()->pluck('name','id');
+        $category = Category::all()->pluck('name', 'id');
         $products = Product::all();
-        
+
 
         return view('Finish_Good.index', compact('category', 'products'));
     }
@@ -59,9 +59,9 @@ class FinishGoodController extends Controller
 
         try {
             // Cari produk 'material' berdasarkan nama
-            foreach($request->input('material') as $index => $materialName){
+            foreach ($request->input('material') as $index => $materialName) {
                 // cek 'N2'
-                if($materialName == 161){
+                if ($materialName == 161) {
                     // entri N2 ke tabel product_keluar
                     Product_Keluar::create([
                         'product_id' => $materialName,
@@ -71,8 +71,8 @@ class FinishGoodController extends Controller
                     // kurangi stock material
                     $qtyIndex = $index + 1;
                     $material = Product::where('id', $materialName)->first();
-                    
-                    if($material){
+
+                    if ($material) {
                         $material->qty -= $request->input('qty')[$qtyIndex];
                         $material->save();
                     }
@@ -80,8 +80,8 @@ class FinishGoodController extends Controller
                     // kurangi stock material
                     $qtyIndex = $index + 1;
                     $material = Product::where('id', $materialName)->first();
-                    
-                    if($material){
+
+                    if ($material) {
                         $material->qty -= $request->input('qty')[$qtyIndex];
                         $material->save();
                     }
@@ -90,65 +90,22 @@ class FinishGoodController extends Controller
 
             $existingProduct = Product::where('nama', $request->input('nama'))->first();
 
-            if($request->input('qty')[0]){
-                if($existingProduct){
+            if ($request->input('qty')[0]) {
+                if ($existingProduct) {
                     $existingProduct->qty += $request->input('qty')[0];
                     $existingProduct->save();
-                } else{
+                } else {
                     Product::create([
                         'nama' => $request->input('nama'),
                         'qty' => $request->input('qty')[0]
                     ]);
                 }
             }
-            // if ($request->input('material')[0] && $request->input('qty')[1]) {
-            //     $material1 = Product::where('nama', $request->input('material')[0])->first();
-
-            //     if ($material1) {
-            //         $material1->qty -= $request->input('qty')[1];
-            //         $material1->save();
-            //     }
-            // }
-
-            // if ($request->input('material')[1] && $request->input('qty')[2]) {
-            //     $material2 = Product::where('nama', $request->input('material')[1])->first();
-
-            //     if ($material2) {
-            //         $material2->qty -= $request->input('qty')[2];
-            //         $material2->save();
-            //     }
-            // }
-
-            // if ($request->input('material')[2] && $request->input('qty')[3]) {
-            //     $material3 = Product::where('nama', $request->input('material')[2])->first();
-
-            //     if ($material3) {
-            //         $material3->qty -= $request->input('qty')[3];
-            //         $material3->save();
-            //     }
-            // }
-
-            // // Cari produk berdasarkan nama
-            // $existingProduct = Product::where('nama', $request->input('nama'))->first();
-
-            // if ($request->input('qty')[0]) {
-            //     if ($existingProduct) {
-            //         $existingProduct->qty += $request->input('qty')[0];
-            //         $existingProduct->save();
-            //     } else {
-            //         // Jika produk dengan nama yang sama tidak ditemukan, buat produk baru
-            //         Product::create([
-            //             'nama' => $request->input('nama'),
-            //             'qty' => $request->input('qty')[0],
-            //         ]);
-            //     }
-            // }
 
             return response()->json([
                 'success' => true,
                 'message' => 'Product ' . ($existingProduct ? 'Updated' : 'Created')
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -159,7 +116,7 @@ class FinishGoodController extends Controller
 
 
 
-    
+
 
     /**
      * Display the specified resource.
@@ -180,9 +137,9 @@ class FinishGoodController extends Controller
      */
     public function edit($id)
     {
-        $category = Category::orderBy('name','ASC')
+        $category = Category::orderBy('name', 'ASC')
             ->get()
-            ->pluck('name','id');
+            ->pluck('name', 'id');
         $product = Product::find($id);
         return $product;
     }
@@ -196,12 +153,12 @@ class FinishGoodController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $category = Category::orderBy('name','ASC')
+        $category = Category::orderBy('name', 'ASC')
             ->get()
-            ->pluck('name','id');
+            ->pluck('name', 'id');
 
-        $this->validate($request , [
-            'nama'          => 'required|string',          
+        $this->validate($request, [
+            'nama'          => 'required|string',
             'harga_beli'    => 'required',
             'qty'           => 'required',
             'category_id'   => 'required',
@@ -211,7 +168,7 @@ class FinishGoodController extends Controller
 
         $input = $request->except('materials', 'accessories');
         $produk = Product::findOrFail($id);
-        
+
         $produk->update($input);
 
         return response()->json([
@@ -241,24 +198,24 @@ class FinishGoodController extends Controller
             'message' => 'Products Deleted'
         ]);
     }
-    
-    public function apiProducts()
-        {
-            $products = Product::with('category')->whereHas('category', function ($query) {
-                $query->where('id', 3);
-            })->get();
 
-            return Datatables::of($products)
-                ->addColumn('category_name', function ($product){
-                    return $product->category->name;
-                })
-                ->addColumn('action', function($product){
-                    return 
+    public function apiProducts()
+    {
+        $products = Product::with('category')->whereHas('category', function ($query) {
+            $query->where('id', 3);
+        })->get();
+
+        return Datatables::of($products)
+            ->addColumn('category_name', function ($product) {
+                return $product->category->name;
+            })
+            ->addColumn('action', function ($product) {
+                return
                     '<a href="' . route('create.finish.good', ['product_id' => $product->id]) . '" class="btn btn-secondary btn-xs"><i class="glyphicon glyphicon-plus"></i><span class="text"> Create</a>' .
-                        '<a onclick="editForm('. $product->id .')" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
-                        '<a onclick="deleteData('. $product->id .')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
-                })
-                ->rawColumns(['category_name', 'action'])
-                ->make(true);
-        }
+                    '<a onclick="editForm(' . $product->id . ')" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
+                    '<a onclick="deleteData(' . $product->id . ')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
+            })
+            ->rawColumns(['category_name', 'action'])
+            ->make(true);
     }
+}

@@ -20,7 +20,7 @@ class AccessoriesController extends Controller
      */
     public function index()
     {
-        $category = Category::all()->pluck('name','id');
+        $category = Category::all()->pluck('name', 'id');
         // where('id', 1)->get()->pluck('name','id');
         $producs = Product::where('category_id', 2)->get();
 
@@ -46,12 +46,12 @@ class AccessoriesController extends Controller
     public function store(Request $request)
     {
         $category = Category::where('id', 1)
-        ->orderBy('name', 'ASC')
-        ->get()
-        ->pluck('name', 'id');
-    
+            ->orderBy('name', 'ASC')
+            ->get()
+            ->pluck('name', 'id');
 
-        $this->validate($request , [
+
+        $this->validate($request, [
             'nama'          => 'required|string',
             'harga_beli'         => 'required',
             'qty'           => 'required',
@@ -61,12 +61,6 @@ class AccessoriesController extends Controller
         ]);
 
         $input = $request->all();
-        // $input['image'] = null;
-
-        // if ($request->hasFile('image')){
-        //     $input['image'] = '/upload/products/'.str_slug($input['nama'], '-').'.'.$request->image->getClientOriginalExtension();
-        //     $request->image->move(public_path('/upload/products/'), $input['image']);
-        // }
 
         Product::create($input);
 
@@ -74,7 +68,6 @@ class AccessoriesController extends Controller
             'success' => true,
             'message' => 'Products Created'
         ]);
-
     }
 
     /**
@@ -96,9 +89,9 @@ class AccessoriesController extends Controller
      */
     public function edit($id)
     {
-        $category = Category::orderBy('name','ASC')
+        $category = Category::orderBy('name', 'ASC')
             ->get()
-            ->pluck('name','id');
+            ->pluck('name', 'id');
         $product = Product::find($id);
         return $product;
     }
@@ -112,11 +105,11 @@ class AccessoriesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $category = Category::orderBy('name','ASC')
+        $category = Category::orderBy('name', 'ASC')
             ->get()
-            ->pluck('name','id');
+            ->pluck('name', 'id');
 
-        $this->validate($request , [
+        $this->validate($request, [
             'nama'          => 'required|string',
             'harga_beli'         => 'required',
             'qty'           => 'required',
@@ -125,16 +118,6 @@ class AccessoriesController extends Controller
 
         $input = $request->all();
         $produk = Product::findOrFail($id);
-
-        // $input['image'] = $produk->image;
-
-        // if ($request->hasFile('image')){
-        //     if (!$produk->image == NULL){
-        //         unlink(public_path($produk->image));
-        //     }
-        //     $input['image'] = '/upload/products/'.str_slug($input['nama'], '-').'.'.$request->image->getClientOriginalExtension();
-        //     $request->image->move(public_path('/upload/products/'), $input['image']);
-        // }
 
         $produk->update($input);
 
@@ -173,18 +156,15 @@ class AccessoriesController extends Controller
         })->get();
 
         return Datatables::of($products)
-            ->addColumn('category_name', function ($product){
+            ->addColumn('category_name', function ($product) {
                 return $product->category->name;
             })
-            ->addColumn('action', function($product){
-                return 
-                    '<a onclick="editForm('. $product->id .')" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
-                    '<a onclick="deleteData('. $product->id .')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
+            ->addColumn('action', function ($product) {
+                return
+                    '<a onclick="editForm(' . $product->id . ')" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
+                    '<a onclick="deleteData(' . $product->id . ')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
             })
             ->rawColumns(['category_name', 'action'])
             ->make(true);
     }
-
-
-    
 }

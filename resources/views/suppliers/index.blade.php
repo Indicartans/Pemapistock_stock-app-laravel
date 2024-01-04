@@ -14,7 +14,7 @@
         </div>
 
         <div class="box-header">
-            <a onclick="addForm()" class="btn btn-primary" >Add Suppliers</a>
+            <a onclick="addForm()" class="btn btn-primary">Add Suppliers</a>
             <a href="{{ route('exportPDF.suppliersAll') }}" class="btn btn-danger">Export PDF</a>
             <a href="{{ route('exportExcel.suppliersAll') }}" class="btn btn-success">Export Excel</a>
         </div>
@@ -24,13 +24,13 @@
         <div class="box-body">
             <table id="sales-table" class="table table-striped">
                 <thead>
-                <tr>
-                    <th>Nomor</th>
-                    <th>Nama</th>
-                    <th>Alamat</th>
-                    <th>Telepon</th>
-                    <th>Action</th>
-                </tr>
+                    <tr>
+                        <th>Nomor</th>
+                        <th>Nama</th>
+                        <th>Alamat</th>
+                        <th>Telepon</th>
+                        <th>Action</th>
+                    </tr>
                 </thead>
                 <tbody></tbody>
             </table>
@@ -41,11 +41,9 @@
     @include('suppliers.form_import')
 
     @include('suppliers.form')
-
 @endsection
 
 @section('bot')
-
     <!-- DataTables -->
     <script src=" {{ asset('assets/bower_components/datatables.net/js/jquery.dataTables.min.js') }} "></script>
     <script src="{{ asset('assets/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }} "></script>
@@ -53,38 +51,45 @@
     {{-- Validator --}}
     <script src="{{ asset('assets/validator/validator.min.js') }}"></script>
 
-    {{--<script>--}}
-    {{--$(function () {--}}
-    {{--$('#items-table').DataTable()--}}
-    {{--$('#example2').DataTable({--}}
-    {{--'paging'      : true,--}}
-    {{--'lengthChange': false,--}}
-    {{--'searching'   : false,--}}
-    {{--'ordering'    : true,--}}
-    {{--'info'        : true,--}}
-    {{--'autoWidth'   : false--}}
-    {{--})--}}
-    {{--})--}}
-    {{--</script>--}}
-
     <script type="text/javascript">
         var table = $('#sales-table').DataTable({
             responsive: true,
             processing: true,
             serverSide: true,
             ajax: "{{ route('api.suppliers') }}",
-            columns: [
-                {data: null, name: 'DT_RowIndex', orderable: false, searchable: false}, 
-                {data: 'nama', name: 'nama'},
-                {data: 'alamat', name: 'alamat'},
-                {data: 'telepon', name: 'telepon'},
-                {data: 'action', name: 'action', orderable: false, searchable: false}
+            columns: [{
+                    data: null,
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'nama',
+                    name: 'nama'
+                },
+                {
+                    data: 'alamat',
+                    name: 'alamat'
+                },
+                {
+                    data: 'telepon',
+                    name: 'telepon'
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                }
             ]
         });
 
-        table.on('draw.dt', function () {
+        table.on('draw.dt', function() {
             var info = table.page.info();
-            table.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+            table.column(0, {
+                search: 'applied',
+                order: 'applied'
+            }).nodes().each(function(cell, i) {
                 cell.innerHTML = i + 1 + info.start;
             });
         });
@@ -115,13 +120,13 @@
                     $('#alamat').val(data.alamat);
                     $('#telepon').val(data.telepon);
                 },
-                error : function() {
+                error: function() {
                     alert("Nothing Data");
                 }
             });
         }
 
-        function deleteData(id){
+        function deleteData(id) {
             var csrf_token = $('meta[name="csrf-token"]').attr('content');
             swal({
                 title: 'Are you sure?',
@@ -131,12 +136,15 @@
                 cancelButtonColor: '#d33',
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'Yes, delete it!'
-            }).then(function () {
+            }).then(function() {
                 $.ajax({
-                    url : "{{ url('suppliers') }}" + '/' + id,
-                    type : "POST",
-                    data : {'_method' : 'DELETE', '_token' : csrf_token},
-                    success : function(data) {
+                    url: "{{ url('suppliers') }}" + '/' + id,
+                    type: "POST",
+                    data: {
+                        '_method': 'DELETE',
+                        '_token': csrf_token
+                    },
+                    success: function(data) {
                         table.ajax.reload();
                         swal({
                             title: 'Success!',
@@ -145,7 +153,7 @@
                             timer: '1500'
                         })
                     },
-                    error : function () {
+                    error: function() {
                         swal({
                             title: 'Oops...',
                             text: data.message,
@@ -157,22 +165,22 @@
             });
         }
 
-        $(function(){
-            $('#modal-form form').validator().on('submit', function (e) {
-                if (!e.isDefaultPrevented()){
+        $(function() {
+            $('#modal-form form').validator().on('submit', function(e) {
+                if (!e.isDefaultPrevented()) {
                     var id = $('#id').val();
                     if (save_method == 'add') url = "{{ url('suppliers') }}";
                     else url = "{{ url('suppliers') . '/' }}" + id;
 
                     $.ajax({
-                        url : url,
-                        type : "POST",
+                        url: url,
+                        type: "POST",
                         //hanya untuk input data tanpa dokumen
-//                      data : $('#modal-form form').serialize(),
+                        //                      data : $('#modal-form form').serialize(),
                         data: new FormData($("#modal-form form")[0]),
                         contentType: false,
                         processData: false,
-                        success : function(data) {
+                        success: function(data) {
                             $('#modal-form').modal('hide');
                             table.ajax.reload();
                             swal({
@@ -182,7 +190,7 @@
                                 timer: '1500'
                             })
                         },
-                        error : function(data){
+                        error: function(data) {
                             swal({
                                 title: 'Oops...',
                                 text: data.message,
@@ -196,5 +204,4 @@
             });
         });
     </script>
-
 @endsection

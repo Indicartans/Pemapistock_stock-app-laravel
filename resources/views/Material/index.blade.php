@@ -17,17 +17,16 @@
         <div class="box-body">
             <table id="products-table" class="table table-striped">
                 <thead>
-                <tr>
-                    <th>Nomor</th>
-                    <th>Nama</th>
-                    <th>Harga</th>
-                    <th>QTY</th>
-                    {{-- <th>Image</th> --}}
-                    <th>Category</th>
-                    <th>Nomer SPB</th>
-                    <th>Keterangan</th>
-                    <th>Action</th>
-                </tr>
+                    <tr>
+                        <th>Nomor</th>
+                        <th>Nama</th>
+                        <th>Harga</th>
+                        <th>QTY</th>
+                        <th>Category</th>
+                        <th>Nomer SPB</th>
+                        <th>Keterangan</th>
+                        <th>Action</th>
+                    </tr>
                 </thead>
                 <tbody></tbody>
             </table>
@@ -36,11 +35,9 @@
     </div>
 
     @include('products.form')
-
 @endsection
 
 @section('bot')
-
     <!-- DataTables -->
     <script src=" {{ asset('assets/bower_components/datatables.net/js/jquery.dataTables.min.js') }} "></script>
     <script src="{{ asset('assets/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }} "></script>
@@ -48,33 +45,26 @@
     {{-- Validator --}}
     <script src="{{ asset('assets/validator/validator.min.js') }}"></script>
 
-    {{--<script>--}}
-    {{--$(function () {--}}
-    {{--$('#items-table').DataTable()--}}
-    {{--$('#example2').DataTable({--}}
-    {{--'paging'      : true,--}}
-    {{--'lengthChange': false,--}}
-    {{--'searching'   : false,--}}
-    {{--'ordering'    : true,--}}
-    {{--'info'        : true,--}}
-    {{--'autoWidth'   : false--}}
-    {{--})--}}
-    {{--})--}}
-    {{--</script>--}}
-
     <script type="text/javascript">
         var table = $('#products-table').DataTable({
             responsive: true,
             processing: true,
             serverSide: true,
             ajax: "{{ route('api.products.Material', ['category_id' => 2]) }}", // Menggunakan parameter category_id = 2
-            columns: [
-                {data: null, name: 'DT_RowIndex', orderable: false, searchable: false}, 
-                {data: 'nama', name: 'nama'},
+            columns: [{
+                    data: null,
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'nama',
+                    name: 'nama'
+                },
                 {
                     data: 'harga_beli',
                     name: 'harga_beli',
-                    render: function (data, type, row) {
+                    render: function(data, type, row) {
                         var formatter = new Intl.NumberFormat('id-ID', {
                             style: 'currency',
                             currency: 'IDR',
@@ -82,27 +72,47 @@
                         return formatter.format(data);
                     }
                 },
-                {data: 'qty', name: 'qty'},       
-                {data: 'category_name', name: 'category_name'},
-                {data: 'nomer_spb', name: 'nomer_spb'},
-                {data: 'keterangan', name: 'keterangan'},
-                {data: 'action', name: 'action', orderable: false, searchable: false}
+                {
+                    data: 'qty',
+                    name: 'qty'
+                },
+                {
+                    data: 'category_name',
+                    name: 'category_name'
+                },
+                {
+                    data: 'nomer_spb',
+                    name: 'nomer_spb'
+                },
+                {
+                    data: 'keterangan',
+                    name: 'keterangan'
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                }
             ]
         });
 
-        table.on('draw.dt', function () {
+        table.on('draw.dt', function() {
             var info = table.page.info();
-            table.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+            table.column(0, {
+                search: 'applied',
+                order: 'applied'
+            }).nodes().each(function(cell, i) {
                 cell.innerHTML = i + 1 + info.start;
             });
         });
 
-       
+
 
         function editForm(id) {
             save_method = 'edit';
             $('input[name=_method]').val('PATCH');
-            $('#modal-form form'    )[0].reset();
+            $('#modal-form form')[0].reset();
             $.ajax({
                 url: "{{ url('products') }}" + '/' + id + "/edit",
                 type: "GET",
@@ -119,13 +129,13 @@
                     $('#nomer_spb').val(data.nomer_spb);
                     $('#keterangan').val(data.keterangan);
                 },
-                error : function() {
+                error: function() {
                     alert("Nothing Data");
                 }
             });
         }
 
-        function deleteData(id){
+        function deleteData(id) {
             var csrf_token = $('meta[name="csrf-token"]').attr('content');
             swal({
                 title: 'Are you sure?',
@@ -135,12 +145,15 @@
                 cancelButtonColor: '#d33',
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'Yes, delete it!'
-            }).then(function () {
+            }).then(function() {
                 $.ajax({
-                    url : "{{ url('products') }}" + '/' + id,
-                    type : "POST",
-                    data : {'_method' : 'DELETE', '_token' : csrf_token},
-                    success : function(data) {
+                    url: "{{ url('products') }}" + '/' + id,
+                    type: "POST",
+                    data: {
+                        '_method': 'DELETE',
+                        '_token': csrf_token
+                    },
+                    success: function(data) {
                         table.ajax.reload();
                         swal({
                             title: 'Success!',
@@ -149,7 +162,7 @@
                             timer: '1500'
                         })
                     },
-                    error : function () {
+                    error: function() {
                         swal({
                             title: 'Oops...',
                             text: data.message,
@@ -161,22 +174,22 @@
             });
         }
 
-        $(function(){
-            $('#modal-form form').validator().on('submit', function (e) {
-                if (!e.isDefaultPrevented()){
+        $(function() {
+            $('#modal-form form').validator().on('submit', function(e) {
+                if (!e.isDefaultPrevented()) {
                     var id = $('#id').val();
                     if (save_method == 'add') url = "{{ url('products') }}";
                     else url = "{{ url('products') . '/' }}" + id;
 
                     $.ajax({
-                        url : url,
-                        type : "POST",
+                        url: url,
+                        type: "POST",
                         //hanya untuk input data tanpa dokumen
-//                      data : $('#modal-form form').serialize(),
+                        //                      data : $('#modal-form form').serialize(),
                         data: new FormData($("#modal-form form")[0]),
                         contentType: false,
                         processData: false,
-                        success : function(data) {
+                        success: function(data) {
                             $('#modal-form').modal('hide');
                             table.ajax.reload();
                             swal({
@@ -186,7 +199,7 @@
                                 timer: '1500'
                             })
                         },
-                        error : function(data){
+                        error: function(data) {
                             swal({
                                 title: 'Oops...',
                                 text: data.message,
@@ -200,5 +213,4 @@
             });
         });
     </script>
-
 @endsection

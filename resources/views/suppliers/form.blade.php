@@ -1,7 +1,8 @@
 <div class="modal fade" id="modal-form" tabindex="1" role="dialog" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form  id="form-item" method="post" class="form-horizontal" data-toggle="validator" enctype="multipart/form-data" >
+            <form id="form-item" method="post" class="form-horizontal" data-toggle="validator"
+                enctype="multipart/form-data">
                 {{ csrf_field() }} {{ method_field('POST') }}
 
                 <div class="modal-header">
@@ -17,26 +18,20 @@
 
                     <div class="box-body">
                         <div class="form-group">
-                            <label >Name</label>
-                            <input type="text" class="form-control" id="nama" name="nama"  autofocus required>
+                            <label>Name</label>
+                            <input type="text" class="form-control" id="nama" name="nama" autofocus required>
                             <span class="help-block with-errors"></span>
                         </div>
 
                         <div class="form-group">
-                            <label >Address</label>
-                            <input type="text" class="form-control" id="alamat" name="alamat"   required>
+                            <label>Address</label>
+                            <input type="text" class="form-control" id="alamat" name="alamat" required>
                             <span class="help-block with-errors"></span>
                         </div>
 
-                        {{-- <div class="form-group">
-                            <label >Email</label>
-                            <input type="email" class="form-control" id="email" name="email"   required>
-                            <span class="help-block with-errors"></span>
-                        </div> --}}
-
                         <div class="form-group">
-                            <label >Phone</label>
-                            <input type="text" class="form-control" id="telepon" name="telepon"   required>
+                            <label>Phone</label>
+                            <input type="text" class="form-control" id="telepon" name="telepon" required>
                             <span class="help-block with-errors"></span>
                         </div>
 

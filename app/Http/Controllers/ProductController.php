@@ -20,9 +20,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $category = Category::orderBy('name','ASC')
+        $category = Category::orderBy('name', 'ASC')
             ->get()
-            ->pluck('name','id');
+            ->pluck('name', 'id');
 
         $producs = Product::all();
         return view('products.index', compact('category'));
@@ -46,38 +46,38 @@ class ProductController extends Controller
      */
 
     public function store(Request $request)
-{
-    $category = Category::orderBy('name','ASC')
-        ->get()
-        ->pluck('name','id');
+    {
+        $category = Category::orderBy('name', 'ASC')
+            ->get()
+            ->pluck('name', 'id');
 
-    $this->validate($request , [
-        'nama'          => 'required|string',
-        'harga_beli'    => 'required',
-        'qty'           => 'required',
-        'category_id'   => 'required',
-        'nomer_spb'     => 'required',
-        'keterangan'    => 'required'
-    ]);
+        $this->validate($request, [
+            'nama'          => 'required|string',
+            'harga_beli'    => 'required',
+            'qty'           => 'required',
+            'category_id'   => 'required',
+            'nomer_spb'     => 'required',
+            'keterangan'    => 'required'
+        ]);
 
-    // Cari produk berdasarkan nama
-    $existingProduct = Product::where('nama', $request->nama)->first();
+        // Cari produk berdasarkan nama
+        $existingProduct = Product::where('nama', $request->nama)->first();
 
-    if ($existingProduct) {
-        // Produk dengan nama yang sama sudah ada, tambahkan stok
-        $existingProduct->qty += $request->qty;
-        $existingProduct->save();
-    } else {
-        // Produk dengan nama yang sama belum ada, buat produk baru
-        $input = $request->all();
-        Product::create($input);
+        if ($existingProduct) {
+            // Produk dengan nama yang sama sudah ada, tambahkan stok
+            $existingProduct->qty += $request->qty;
+            $existingProduct->save();
+        } else {
+            // Produk dengan nama yang sama belum ada, buat produk baru
+            $input = $request->all();
+            Product::create($input);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Product Created or Stock Updated'
+        ]);
     }
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Product Created or Stock Updated'
-    ]);
-}
 
 
     /**
@@ -99,9 +99,9 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $category = Category::orderBy('name','ASC')
+        $category = Category::orderBy('name', 'ASC')
             ->get()
-            ->pluck('name','id');
+            ->pluck('name', 'id');
         $product = Product::find($id);
         return $product;
     }
@@ -115,30 +115,20 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $category = Category::orderBy('name','ASC')
+        $category = Category::orderBy('name', 'ASC')
             ->get()
-            ->pluck('name','id');
+            ->pluck('name', 'id');
 
-        $this->validate($request , [
+        $this->validate($request, [
             'nama'          => 'required|string',
             'harga_beli'         => 'required',
             'qty'           => 'required',
-//            'image'         => 'required',
             'category_id'   => 'required',
         ]);
 
         $input = $request->all();
         $produk = Product::findOrFail($id);
 
-        // $input['image'] = $produk->image;
-
-        // if ($request->hasFile('image')){
-        //     if (!$produk->image == NULL){
-        //         unlink(public_path($produk->image));
-        //     }
-        //     $input['image'] = '/upload/products/'.str_slug($input['nama'], '-').'.'.$request->image->getClientOriginalExtension();
-        //     $request->image->move(public_path('/upload/products/'), $input['image']);
-        // }
 
         $produk->update($input);
 
@@ -170,11 +160,12 @@ class ProductController extends Controller
         ]);
     }
 
-    public function apiProducts(){
+    public function apiProducts()
+    {
         $product = Product::all();
 
         return Datatables::of($product)
-            ->addColumn('category_name', function ($product){
+            ->addColumn('category_name', function ($product) {
                 return $product->category->name;
             })
             // ->addColumn('show_photo', function($product){
@@ -183,12 +174,11 @@ class ProductController extends Controller
             //     }
             //     return '<img class="rounded-square" width="50" height="50" src="'. url($product->image) .'" alt="">';
             // })
-            ->addColumn('action', function($product){
-                return 
-                    '<a onclick="editForm('. $product->id .')" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
-                    '<a onclick="deleteData('. $product->id .')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
+            ->addColumn('action', function ($product) {
+                return
+                    '<a onclick="editForm(' . $product->id . ')" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
+                    '<a onclick="deleteData(' . $product->id . ')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
             })
-            ->rawColumns(['category_name','show_photo','action'])->make(true);
-
+            ->rawColumns(['category_name', 'show_photo', 'action'])->make(true);
     }
 }

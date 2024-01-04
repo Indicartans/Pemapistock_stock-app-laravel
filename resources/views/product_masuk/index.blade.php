@@ -8,11 +8,11 @@
     <!-- daterange picker -->
     <link rel="stylesheet" href="{{ asset('assets/bower_components/bootstrap-daterangepicker/daterangepicker.css') }}">
     <!-- bootstrap datepicker -->
-    <link rel="stylesheet" href="{{ asset('assets/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}">
 @endsection
 
 @section('content')
-
     <div class="box">
 
         <div class="box-header">
@@ -35,15 +35,15 @@
         <div class="box-body">
             <table id="products-in-table" class="table table-striped">
                 <thead>
-                <tr>
-                    <th>Nomor</th>
-                    <th>Material</th>
-                    <th>Supplier</th>
-                    <th>QTY</th>
-                    <th>Tanggal Masuk</th>
-                    <th>Harga Beli</th>
-                    <th>Action</th>
-                </tr>
+                    <tr>
+                        <th>Nomor</th>
+                        <th>Material</th>
+                        <th>Supplier</th>
+                        <th>QTY</th>
+                        <th>Tanggal Masuk</th>
+                        <th>Harga Beli</th>
+                        <th>Action</th>
+                    </tr>
                 </thead>
                 <tbody></tbody>
             </table>
@@ -52,13 +52,9 @@
     </div>
 
     @include('product_masuk.form')
-
-
-
 @endsection
 
 @section('bot')
-
     <!-- DataTables -->
     <script src=" {{ asset('assets/bower_components/datatables.net/js/jquery.dataTables.min.js') }} "></script>
     <script src="{{ asset('assets/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }} "></script>
@@ -77,28 +73,15 @@
     <!-- bootstrap datepicker -->
     <script src="{{ asset('assets/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <!-- bootstrap color picker -->
-    <script src="{{ asset('assets/bower_components/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js') }}"></script>
+    <script src="{{ asset('assets/bower_components/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js') }}">
+    </script>
     <!-- bootstrap time picker -->
     <script src="{{ asset('assets/plugins/timepicker/bootstrap-timepicker.min.js') }}"></script>
     {{-- Validator --}}
     <script src="{{ asset('assets/validator/validator.min.js') }}"></script>
 
-    {{--<script>--}}
-    {{--$(function () {--}}
-    {{--$('#items-table').DataTable()--}}
-    {{--$('#example2').DataTable({--}}
-    {{--'paging'      : true,--}}
-    {{--'lengthChange': false,--}}
-    {{--'searching'   : false,--}}
-    {{--'ordering'    : true,--}}
-    {{--'info'        : true,--}}
-    {{--'autoWidth'   : false--}}
-    {{--})--}}
-    {{--})--}}
-    {{--</script>--}}
-
     <script>
-        $(function () {
+        $(function() {
 
             //Date picker
             $('#tanggal').datepicker({
@@ -116,7 +99,7 @@
                 showInputs: false
             })
 
-            
+
         })
         $(document).ready(function() {
             $('.js-example-basic-multiple').select2();
@@ -129,16 +112,32 @@
             processing: true,
             serverSide: true,
             ajax: "{{ route('api.productsIn') }}",
-            columns: [
-                {data: null, name: 'DT_RowIndex', orderable: false, searchable: false}, 
-                {data: 'products_name', name: 'products_name'},
-                {data: 'supplier_name', name: 'supplier_name'},
-                {data: 'qty', name: 'qty'},
-                {data: 'tanggal', name: 'tanggal'},
+            columns: [{
+                    data: null,
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'products_name',
+                    name: 'products_name'
+                },
+                {
+                    data: 'supplier_name',
+                    name: 'supplier_name'
+                },
+                {
+                    data: 'qty',
+                    name: 'qty'
+                },
+                {
+                    data: 'tanggal',
+                    name: 'tanggal'
+                },
                 {
                     data: 'harga_beli',
                     name: 'harga_beli',
-                    render: function (data, type, row) {
+                    render: function(data, type, row) {
                         var formatter = new Intl.NumberFormat('id-ID', {
                             style: 'currency',
                             currency: 'IDR',
@@ -146,13 +145,21 @@
                         return formatter.format(data);
                     }
                 },
-                {data: 'action', name: 'action', orderable: false, searchable: false}
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                }
             ]
         });
 
-        table.on('draw.dt', function () {
+        table.on('draw.dt', function() {
             var info = table.page.info();
-            table.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+            table.column(0, {
+                search: 'applied',
+                order: 'applied'
+            }).nodes().each(function(cell, i) {
                 cell.innerHTML = i + 1 + info.start;
             });
         });
@@ -185,13 +192,13 @@
                     $('#tanggal').val(data.tanggal);
                     $('#harga_beli').val(data.harga_beli);
                 },
-                error : function() {
+                error: function() {
                     alert("Nothing Data");
                 }
             });
         }
 
-        function deleteData(id){
+        function deleteData(id) {
             var csrf_token = $('meta[name="csrf-token"]').attr('content');
             swal({
                 title: 'Are you sure?',
@@ -201,12 +208,15 @@
                 cancelButtonColor: '#d33',
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'Yes, delete it!'
-            }).then(function () {
+            }).then(function() {
                 $.ajax({
-                    url : "{{ url('productsIn') }}" + '/' + id,
-                    type : "POST",
-                    data : {'_method' : 'DELETE', '_token' : csrf_token},
-                    success : function(data) {
+                    url: "{{ url('productsIn') }}" + '/' + id,
+                    type: "POST",
+                    data: {
+                        '_method': 'DELETE',
+                        '_token': csrf_token
+                    },
+                    success: function(data) {
                         table.ajax.reload();
                         swal({
                             title: 'Success!',
@@ -215,7 +225,7 @@
                             timer: '1500'
                         })
                     },
-                    error : function () {
+                    error: function() {
                         swal({
                             title: 'Oops...',
                             text: data.message,
@@ -227,22 +237,22 @@
             });
         }
 
-        $(function(){
-            $('#modal-form form').validator().on('submit', function (e) {
-                if (!e.isDefaultPrevented()){
+        $(function() {
+            $('#modal-form form').validator().on('submit', function(e) {
+                if (!e.isDefaultPrevented()) {
                     var id = $('#id').val();
                     if (save_method == 'add') url = "{{ url('productsIn') }}";
                     else url = "{{ url('productsIn') . '/' }}" + id;
 
                     $.ajax({
-                        url : url,
-                        type : "POST",
+                        url: url,
+                        type: "POST",
                         //hanya untuk input data tanpa dokumen
-//                      data : $('#modal-form form').serialize(),
+                        //                      data : $('#modal-form form').serialize(),
                         data: new FormData($("#modal-form form")[0]),
                         contentType: false,
                         processData: false,
-                        success : function(data) {
+                        success: function(data) {
                             $('#modal-form').modal('hide');
                             table.ajax.reload();
                             swal({
@@ -252,7 +262,7 @@
                                 timer: '1500'
                             })
                         },
-                        error : function(data){
+                        error: function(data) {
                             swal({
                                 title: 'Oops...',
                                 text: data.message,
@@ -266,5 +276,4 @@
             });
         });
     </script>
-
 @endsection

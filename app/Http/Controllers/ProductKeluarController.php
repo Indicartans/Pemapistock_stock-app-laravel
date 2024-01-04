@@ -25,21 +25,21 @@ class ProductKeluarController extends Controller
      */
     public function index()
     {
-        $products = Product::orderBy('nama','ASC')
+        $products = Product::orderBy('nama', 'ASC')
             ->get()
-            ->pluck('nama','id');
+            ->pluck('nama', 'id');
 
-        $customers = Customer::orderBy('nama','ASC')
+        $customers = Customer::orderBy('nama', 'ASC')
             ->get()
-            ->pluck('nama','id');
+            ->pluck('nama', 'id');
 
         $nomerSpbOptions = Product::orderBy('nomer_spb', 'ASC')
             ->distinct()
             ->pluck('nomer_spb', 'nomer_spb')
-            ->prepend('-- Pilih Nomer SPB --', ''); 
+            ->prepend('-- Pilih Nomer SPB --', '');
 
         $invoice_data = Product_Keluar::all();
-        return view('product_keluar.index', compact('products','customers', 'invoice_data'));
+        return view('product_keluar.index', compact('products', 'customers', 'invoice_data'));
     }
 
     /**
@@ -51,11 +51,11 @@ class ProductKeluarController extends Controller
     {
         $products = Product::all();
         $customers = Customer::all();
-        
+
         return view('product_keluar.create', compact('products', 'customers'));
     }
-    
-        //
+
+    //
 
     /**
      * Store a newly created resource in storage.
@@ -68,13 +68,13 @@ class ProductKeluarController extends Controller
     {
         // dd($request->all());
         $this->validate($request, [
-           'product_id'     => 'required|array',
-           'customer_id'    => 'required|array',
-           'qty'            => 'required|array',
-           'nomer_spb'      => 'required|array',
-           'tanggal'        => 'required|array',
-           'keterangan'     => 'required|array',
-           
+            'product_id'     => 'required|array',
+            'customer_id'    => 'required|array',
+            'qty'            => 'required|array',
+            'nomer_spb'      => 'required|array',
+            'tanggal'        => 'required|array',
+            'keterangan'     => 'required|array',
+
         ]);
 
         foreach ($request->product_id as $key => $productId) {
@@ -86,24 +86,16 @@ class ProductKeluarController extends Controller
                 'tanggal' => $request->tanggal[$key],
                 'keterangan' => $request->keterangan[$key],
             ]);
-    
+
             $product = Product::findOrFail($productId);
             $product->qty -= $request->input('qty')[$key];
             $product->save();
         }
 
-        // Product_Keluar::create($request->all());
-
-        // $product = Product::findOrFail($request->product_id);
-        
-        // $product->qty -= $request->qty;
-        // $product->save();
-
         return response()->json([
             'success'    => true,
             'message'    => 'Products Out Created'
         ]);
-
     }
 
     /**
@@ -145,7 +137,7 @@ class ProductKeluarController extends Controller
             'nomer_spb'      => 'required',
             'tanggal'           => 'required'
         ]);
-        
+
 
         $product_keluar = Product_Keluar::findOrFail($id);
         $product_keluar->update($request->all());
@@ -178,23 +170,23 @@ class ProductKeluarController extends Controller
 
 
 
-    public function apiProductsOut(){
+    public function apiProductsOut()
+    {
         $product = Product_Keluar::with('product', 'customer')->get();
 
         return Datatables::of($product)
-            ->addColumn('products_name', function ($product){
+            ->addColumn('products_name', function ($product) {
                 return $product->product->nama ?? '';
             })
-            ->addColumn('customer_name', function ($product){
+            ->addColumn('customer_name', function ($product) {
                 return $product->customer->nama ?? '';
             })
-            ->addColumn('action', function($product){
-                return 
-                    '<a onclick="editForm('. $product->id .')" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
-                    '<a onclick="deleteData('. $product->id .')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
+            ->addColumn('action', function ($product) {
+                return
+                    '<a onclick="editForm(' . $product->id . ')" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
+                    '<a onclick="deleteData(' . $product->id . ')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
             })
-            ->rawColumns(['products_name','customer_name','action'])->make(true);
-
+            ->rawColumns(['products_name', 'customer_name', 'action'])->make(true);
     }
 
     public function exportProductKeluarAll()
@@ -202,7 +194,7 @@ class ProductKeluarController extends Controller
         $product_keluar = Product_Keluar::all();
         $timestamp = now()->format('Y-m-d_H-i-s');
 
-        $pdf = PDF::loadView('product_keluar.productKeluarAllPDF',compact('product_keluar'));
+        $pdf = PDF::loadView('product_keluar.productKeluarAllPDF', compact('product_keluar'));
         $filename = 'product_keluar_' . $timestamp . '.pdf';
 
         return $pdf->download($filename);
